@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Synthetic retail space and range optimisation case study by Haniy Turana." />
+  <title>Retail Space & Range Optimisation | Haniy Turana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    .dash-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px max(22px,calc((100vw - var(--max))/2 + 22px))}
+    .back-link{text-decoration:none;font-weight:800}.demo-badge{font-size:.78rem;color:var(--muted)}
+    .dashboard-shell{max-width:var(--max);margin:auto;padding:38px 22px 80px}
+    .dash-hero{display:grid;grid-template-columns:1.5fr .7fr;gap:48px;align-items:end;margin-bottom:28px}.dash-hero h1{font-family:Georgia,serif;font-size:clamp(2.7rem,6vw,5rem);line-height:1.04;margin:0}.dash-hero>div>p:last-child{max-width:800px;color:var(--muted);font-size:1.05rem}
+    .scenario-control{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px;background:#fff;border:1px solid var(--line);border-radius:14px}.scenario-control label{font-weight:700}.scenario-control select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-width:220px}.filter-note{flex-basis:100%;margin:0;color:var(--muted);font-size:.82rem;max-width:390px}
+    .kpi-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.kpi-card span{display:block;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.kpi-card strong{display:block;margin:5px 0 2px;font-size:clamp(1.45rem,3vw,2.1rem);overflow-wrap:anywhere}.kpi-card small{display:block;color:var(--muted)}
+    .dashboard-grid{display:grid;gap:16px;margin:16px 0}.dashboard-grid.two-up{grid-template-columns:1.35fr .85fr}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:12px}.panel-head h2{font-size:1.08rem}.small-note,.chart-note{color:var(--muted);font-size:.78rem}.chart-wrap{width:100%;height:320px}.chart-wrap.tall{height:340px}
+    .recommendation{border-left:4px solid var(--teal);background:#eff7f7;padding:18px 20px;border-radius:10px}.recommendation strong{display:block;margin-bottom:5px}
+    .matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}.matrix div{padding:16px;border:1px solid var(--line);border-radius:12px;background:#fff}.matrix b{display:block;margin-bottom:4px}
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-scroll table{width:100%;min-width:760px;border-collapse:collapse}.table-scroll th,.table-scroll td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);font-size:.82rem}.table-scroll th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.status-cell,.positive{font-weight:800;color:var(--good)}
+    .method-panel{margin-top:16px;padding:28px;background:var(--ink);color:#fff;border-radius:18px}.method-panel h2{margin-top:0}.method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.method-grid div{padding:15px;border:1px solid rgba(255,255,255,.17);border-radius:12px}.method-grid strong,.method-grid span{display:block}.method-grid span{margin-top:6px;color:#d5dde5;font-size:.82rem}
+    @media(max-width:900px){.dash-hero,.dashboard-grid.two-up{grid-template-columns:1fr}.method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:700px){.dash-header{align-items:flex-start;flex-direction:column;gap:4px}.dashboard-shell{padding:28px 15px 60px}.matrix,.method-grid{grid-template-columns:1fr}.scenario-control{align-items:stretch}.scenario-control select{width:100%;min-width:0}.chart-wrap,.chart-wrap.tall{height:280px}}
+  </style>
+</head>
+<body>
+<header class="dash-header">
+  <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
+  <span class="demo-badge">Synthetic data · Independent case study</span>
+</header>
+<main class="dashboard-shell">
+  <section class="dash-hero">
+    <div>
+      <p class="eyebrow">Retail strategy case study</p>
+      <h1>Space &amp; Range Optimisation</h1>
+      <p>This dashboard evaluates whether shelf space reflects sales, gross profit, productivity and customer needs. It demonstrates how I would translate category data into practical range and space recommendations.</p>
+    </div>
+    <div class="scenario-control">
+      <label for="storeType">Store cluster</label>
+      <select id="storeType">
+        <option value="urban">Urban premium</option>
+        <option value="family">Family residential</option>
+        <option value="value">Value-focused neighbourhood</option>
+      </select>
+      <p class="filter-note" id="filterStatus" aria-live="polite">All figures below show the Urban premium scenario.</p>
+    </div>
+  </section>
+
+  <section class="kpi-grid" id="kpis">
+    <article class="kpi-card"><span>Category sales</span><strong id="salesKpi">RM528K</strong><small id="salesNote">Urban scenario estimate</small></article>
+    <article class="kpi-card"><span>Gross profit</span><strong id="gpKpi">RM181K</strong><small id="gpNote">34.3% gross margin</small></article>
+    <article class="kpi-card"><span>Sales / shelf metre</span><strong id="spaceKpi">RM4,650</strong><small id="spaceNote">+10.7% vs current</small></article>
+    <article class="kpi-card"><span>SKUs to review</span><strong id="reviewKpi">14</strong><small>Low productivity or duplication</small></article>
+  </section>
+
+  <section class="dashboard-grid two-up">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Space productivity</p><h2>Sales, profit and shelf-space share</h2></div></div>
+      <div class="chart-wrap tall" id="spaceChart"></div>
+      <p class="chart-note">A brand does not automatically deserve more space simply because sales share exceeds space share. Profit, category role, stock turn, availability and substitution risk must also be considered.</p>
+    </article>
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Decision logic</p><h2>Recommended actions</h2></div></div>
+      <div class="matrix">
+        <div><b>Expand</b><span>High sales and profit productivity with insufficient shelf space.</span></div>
+        <div><b>Retain</b><span>Balanced contribution and strategically important core assortment.</span></div>
+        <div><b>Reduce</b><span>Acceptable demand but weak productivity relative to space occupied.</span></div>
+        <div><b>Review / delist</b><span>Low sales, low margin, duplication and excessive stock cover.</span></div>
+      </div>
+      <div class="recommendation" id="clusterRecommendation"><strong>Urban premium recommendation</strong>Increase premium skincare depth while retaining essential opening price points. Protect space for high-margin specialist products but cap duplicated variants.</div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div><p class="eyebrow">SKU rationalisation</p><h2>Priority action list</h2></div><span class="small-note">Illustrative synthetic products</span></div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Product group</th><th>Sales share</th><th>Profit share</th><th>Space share</th><th>Stock cover</th><th>Recommendation</th><th>Reason</th></tr></thead>
+      <tbody id="actionRows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="dashboard-grid two-up">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Store clustering</p><h2>Assortment should vary by customer mission</h2></div></div>
+      <div class="chart-wrap" id="clusterChart"></div>
+    </article>
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Scenario impact</p><h2>Current vs proposed allocation</h2></div></div>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Measure</th><th>Current</th><th>Proposed</th><th>Change</th></tr></thead>
+        <tbody id="impactRows">
+          <tr><td>Category sales</td><td>RM500,000</td><td>RM528,000</td><td class="positive">+5.6%</td></tr>
+          <tr><td>Gross profit</td><td>RM165,000</td><td>RM181,000</td><td class="positive">+9.7%</td></tr>
+          <tr><td>Slow-moving stock</td><td>RM70,000</td><td>RM52,000</td><td class="positive">-25.7%</td></tr>
+          <tr><td>Sales per shelf metre</td><td>RM4,200</td><td>RM4,650</td><td class="positive">+10.7%</td></tr>
+        </tbody>
+      </table></div>
+      <p class="chart-note">Proposed values are scenario estimates, not actual business results.</p>
+    </article>
+  </section>
+
+  <section class="method-panel">
+    <p class="eyebrow">How I approached it</p>
+    <h2>Business question → metrics → trade-offs → recommendation</h2>
+    <div class="method-grid">
+      <div><strong>1. Diagnose</strong><span>Compare sales, profit, shelf allocation, stock cover and SKU duplication.</span></div>
+      <div><strong>2. Segment</strong><span>Adjust assortment logic for urban, family and value-oriented store clusters.</span></div>
+      <div><strong>3. Simulate</strong><span>Reallocate space and estimate impact on productivity, profit and slow stock.</span></div>
+      <div><strong>4. Recommend</strong><span>Provide SKU-level actions with commercial reasoning and implementation risks.</span></div>
+    </div>
+  </section>
+</main>
+<script src="dashboard.js"></script>
+<script>
+const productGroupLabels=['Premium','Core','Value','Family packs','Travel sizes'];
+svgGroupedBarChart(document.getElementById('clusterChart'),['Premium','Core','Value','Family packs'],[
+ {name:'Urban',values:[38,32,14,16]},
+ {name:'Family',values:[20,34,18,28]},
+ {name:'Value',values:[12,32,38,18]}
+],'%');
+const rows={
+ urban:[['Premium serum','12%','18%','8%','5.2 weeks','Expand','Strong profit productivity and unmet premium demand'],['Core cleanser','19%','17%','18%','4.0 weeks','Retain','Balanced core category role'],['Entry moisturiser','8%','4%','12%','9.5 weeks','Reduce','Weak margin and excessive space'],['Duplicate toner variants','3%','2%','7%','14.0 weeks','Review / delist','Duplication and slow movement']],
+ family:[['Family cleanser pack','16%','14%','10%','4.5 weeks','Expand','Strong basket relevance for family mission'],['Core moisturiser','20%','19%','19%','4.2 weeks','Retain','Balanced demand and contribution'],['Premium serum','8%','12%','11%','7.0 weeks','Reduce','Profitable but less relevant to cluster'],['Duplicate travel sizes','2%','1%','5%','13.0 weeks','Review / delist','Low demand and duplication']],
+ value:[['Opening-price cleanser','18%','12%','12%','3.8 weeks','Expand','High unit movement and price-point role'],['Core moisturiser','18%','17%','18%','4.5 weeks','Retain','Balanced core assortment'],['Premium treatment','5%','9%','12%','10.5 weeks','Reduce','Low demand despite margin'],['Duplicate premium variants','2%','3%','7%','15.0 weeks','Review / delist','Slow movement and low cluster relevance']]
+};
+const recs={urban:['Urban premium recommendation','Increase premium skincare depth while retaining essential opening price points. Protect space for high-margin specialist products but cap duplicated variants.'],family:['Family residential recommendation','Increase family packs and dependable core lines. Maintain a balanced price ladder and reduce specialist variants with weak household demand.'],value:['Value-focused recommendation','Prioritise opening price points, trusted core lines and high-turn essentials. Limit premium duplication and use profitability guardrails before expanding low-price ranges.']};
+const scenarios={
+ urban:{
+  label:'Urban premium',
+  kpis:{sales:'RM528K',salesNote:'Urban scenario estimate',gp:'RM181K',gpNote:'34.3% gross margin',space:'RM4,650',spaceNote:'+10.7% vs current',review:'14'},
+  series:[{name:'Sales share',values:[28,32,14,16,10]},{name:'Profit share',values:[36,32,10,14,8]},{name:'Space share',values:[22,32,20,18,8]}],
+  impact:[['Category sales','RM500,000','RM528,000','+5.6%'],['Gross profit','RM165,000','RM181,000','+9.7%'],['Slow-moving stock','RM70,000','RM52,000','-25.7%'],['Sales per shelf metre','RM4,200','RM4,650','+10.7%']]
+ },
+ family:{
+  label:'Family residential',
+  kpis:{sales:'RM612K',salesNote:'Family scenario estimate',gp:'RM202K',gpNote:'33.0% gross margin',space:'RM4,420',spaceNote:'+8.3% vs current',review:'11'},
+  series:[{name:'Sales share',values:[18,31,15,28,8]},{name:'Profit share',values:[24,32,12,25,7]},{name:'Space share',values:[20,32,17,24,7]}],
+  impact:[['Category sales','RM570,000','RM612,000','+7.4%'],['Gross profit','RM184,000','RM202,000','+9.8%'],['Slow-moving stock','RM64,000','RM49,000','-23.4%'],['Sales per shelf metre','RM4,080','RM4,420','+8.3%']]
+ },
+ value:{
+  label:'Value-focused neighbourhood',
+  kpis:{sales:'RM474K',salesNote:'Value scenario estimate',gp:'RM142K',gpNote:'30.0% gross margin',space:'RM4,180',spaceNote:'+6.9% vs current',review:'17'},
+  series:[{name:'Sales share',values:[10,30,38,17,5]},{name:'Profit share',values:[18,32,30,15,5]},{name:'Space share',values:[16,32,34,14,4]}],
+  impact:[['Category sales','RM448,000','RM474,000','+5.8%'],['Gross profit','RM132,000','RM142,000','+7.6%'],['Slow-moving stock','RM76,000','RM55,000','-27.6%'],['Sales per shelf metre','RM3,910','RM4,180','+6.9%']]
+ }
+};
+function renderScenario(type){
+ const scenario=scenarios[type],k=scenario.kpis;
+ document.getElementById('salesKpi').textContent=k.sales;
+ document.getElementById('salesNote').textContent=k.salesNote;
+ document.getElementById('gpKpi').textContent=k.gp;
+ document.getElementById('gpNote').textContent=k.gpNote;
+ document.getElementById('spaceKpi').textContent=k.space;
+ document.getElementById('spaceNote').textContent=k.spaceNote;
+ document.getElementById('reviewKpi').textContent=k.review;
+ document.getElementById('filterStatus').textContent=`All figures below show the ${scenario.label} scenario.`;
+ svgGroupedBarChart(document.getElementById('spaceChart'),productGroupLabels,scenario.series,'%');
+ document.getElementById('actionRows').innerHTML=rows[type].map(r=>`<tr>${r.map((v,i)=>`<td${i===5?' class="status-cell"':''}>${v}</td>`).join('')}</tr>`).join('');
+ document.getElementById('clusterRecommendation').innerHTML=`<strong>${recs[type][0]}</strong>${recs[type][1]}`;
+ document.getElementById('impactRows').innerHTML=scenario.impact.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="positive">${r[3]}</td></tr>`).join('');
+}
+document.getElementById('storeType').addEventListener('change',e=>renderScenario(e.target.value));
+renderScenario('urban');
+</script>
+</body>
+</html>

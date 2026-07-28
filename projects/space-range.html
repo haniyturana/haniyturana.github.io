@@ -9,33 +9,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="dashboard.css" />
-  <style>
-    .dash-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px max(22px,calc((100vw - var(--max))/2 + 22px))}
-    .back-link{text-decoration:none;font-weight:800}.demo-badge{font-size:.78rem;color:var(--muted)}
-    .dashboard-shell{max-width:var(--max);margin:auto;padding:38px 22px 80px}
-    .dash-hero{display:grid;grid-template-columns:1.5fr .7fr;gap:48px;align-items:end;margin-bottom:28px}.dash-hero h1{font-family:Georgia,serif;font-size:clamp(2.7rem,6vw,5rem);line-height:1.04;margin:0}.dash-hero>div>p:last-child{max-width:800px;color:var(--muted);font-size:1.05rem}
-    .scenario-control{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px;background:#fff;border:1px solid var(--line);border-radius:14px}.scenario-control label{font-weight:700}.scenario-control select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-width:220px}.filter-note{flex-basis:100%;margin:0;color:var(--muted);font-size:.82rem;max-width:390px}
-    .kpi-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.kpi-card span{display:block;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.kpi-card strong{display:block;margin:5px 0 2px;font-size:clamp(1.45rem,3vw,2.1rem);overflow-wrap:anywhere}.kpi-card small{display:block;color:var(--muted)}
-    .dashboard-grid{display:grid;gap:16px;margin:16px 0}.dashboard-grid.two-up{grid-template-columns:1.35fr .85fr}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:12px}.panel-head h2{font-size:1.08rem}.small-note,.chart-note{color:var(--muted);font-size:.78rem}.chart-wrap{width:100%;height:320px}.chart-wrap.tall{height:340px}
-    .recommendation{border-left:4px solid var(--teal);background:#eff7f7;padding:18px 20px;border-radius:10px}.recommendation strong{display:block;margin-bottom:5px}
-    .matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}.matrix div{padding:16px;border:1px solid var(--line);border-radius:12px;background:#fff}.matrix b{display:block;margin-bottom:4px}
-    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-scroll table{width:100%;min-width:760px;border-collapse:collapse}.table-scroll th,.table-scroll td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);font-size:.82rem}.table-scroll th{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.status-cell,.positive{font-weight:800;color:var(--good)}
-    .method-panel{margin-top:16px;padding:28px;background:var(--ink);color:#fff;border-radius:18px}.method-panel h2{margin-top:0}.method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.method-grid div{padding:15px;border:1px solid rgba(255,255,255,.17);border-radius:12px}.method-grid strong,.method-grid span{display:block}.method-grid span{margin-top:6px;color:#d5dde5;font-size:.82rem}
-    @media(max-width:900px){.dash-hero,.dashboard-grid.two-up{grid-template-columns:1fr}.method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:700px){.dash-header{align-items:flex-start;flex-direction:column;gap:4px}.dashboard-shell{padding:28px 15px 60px}.matrix,.method-grid{grid-template-columns:1fr}.scenario-control{align-items:stretch}.scenario-control select{width:100%;min-width:0}.chart-wrap,.chart-wrap.tall{height:280px}}
-  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to case study content</a>
 <header class="dash-header">
   <a href="../index.html#projects" class="back-link">← Back to portfolio</a>
   <span class="demo-badge">Synthetic data · Independent case study</span>
 </header>
-<main class="dashboard-shell">
-  <section class="dash-hero">
+<nav class="case-nav" aria-label="Case study contents">
+  <a href="#overview">Overview</a>
+  <a href="#business-problem">Business problem</a>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#insights">Insights</a>
+  <a href="#recommendations">Recommendations</a>
+  <a href="#impact">Impact</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#methodology">Methodology</a>
+</nav>
+<main class="dashboard-shell" id="main-content">
+  <section class="dash-hero" id="overview">
     <div>
-      <p class="eyebrow">Retail strategy case study</p>
-      <h1>Space &amp; Range Optimisation</h1>
-      <p>This dashboard evaluates whether shelf space reflects sales, gross profit, productivity and customer needs. It demonstrates how I would translate category data into practical range and space recommendations.</p>
+      <p class="eyebrow">Independent Retail Analytics Case Study</p>
+      <h1>Retail Space &amp; Range Optimisation</h1>
+      <p>Translating sales, gross profit, shelf productivity, stock cover and store characteristics into practical assortment decisions.</p>
     </div>
     <div class="scenario-control">
       <label for="storeType">Store cluster</label>
@@ -44,21 +40,90 @@
         <option value="family">Family residential</option>
         <option value="value">Value-focused neighbourhood</option>
       </select>
-      <p class="filter-note" id="filterStatus" aria-live="polite">All figures below show the Urban premium scenario.</p>
+      <label for="strategyType">Assortment strategy</label>
+      <select id="strategyType">
+        <option value="balanced">Balanced</option>
+        <option value="growth">Growth focused</option>
+        <option value="margin">Margin focused</option>
+        <option value="recovery">Inventory recovery</option>
+      </select>
+      <p class="filter-note" id="filterStatus" aria-live="polite">Urban premium · Balanced strategy</p>
     </div>
   </section>
+
+  <aside class="case-disclaimer" aria-label="Important data disclaimer">
+    <strong>Independent portfolio work</strong>
+    This independent portfolio case study uses synthetic data. It is not based on Watsons data and does not represent Watsons’ actual operations, results or commercial decisions.
+  </aside>
+
+  <section class="outcome-grid" aria-label="Case study outcomes">
+    <article><span>01</span><strong>Expand productive ranges</strong></article>
+    <article><span>02</span><strong>Retain strategic core products</strong></article>
+    <article><span>03</span><strong>Reduce inefficient shelf allocation</strong></article>
+    <article><span>04</span><strong>Review duplicated or slow-moving SKUs</strong></article>
+  </section>
+
+  <section class="case-section" id="business-problem">
+    <p class="eyebrow">Business problem</p>
+    <div class="section-intro">
+      <h2>Historical shelf allocation can drift away from current commercial reality.</h2>
+      <div>
+        <p>Legacy space decisions may no longer reflect customer demand, gross-profit contribution, sales productivity, stock turnover, store mission, SKU duplication, range relevance or availability constraints.</p>
+        <p>The result can be low sales per shelf metre, excess inventory, duplicated choices, weak category profitability, stock-outs in productive ranges and inconsistent assortments across store types.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="case-section" id="business-questions">
+    <p class="eyebrow">Business questions</p>
+    <h2>Questions the analysis must answer</h2>
+    <div class="question-grid">
+      <article><span>01</span><h3>Which product groups deserve more shelf space?</h3></article>
+      <article><span>02</span><h3>Which SKUs should be retained, reduced or reviewed?</h3></article>
+      <article><span>03</span><h3>Does sales contribution justify current space allocation?</h3></article>
+      <article><span>04</span><h3>How should assortment differ across store missions?</h3></article>
+      <article><span>05</span><h3>Can profit and productivity improve without more total space?</h3></article>
+      <article><span>06</span><h3>Which commercial risks require validation before rollout?</h3></article>
+    </div>
+  </section>
+
+  <section class="case-section" id="decision-framework">
+    <p class="eyebrow">Decision framework</p>
+    <h2>From contribution metrics to an implementable decision</h2>
+    <div class="decision-flow" role="list" aria-label="Space and range decision sequence">
+      <span role="listitem">Sales contribution</span><i aria-hidden="true">→</i>
+      <span role="listitem">Gross profit</span><i aria-hidden="true">→</i>
+      <span role="listitem">Space share</span><i aria-hidden="true">→</i>
+      <span role="listitem">Shelf productivity</span><i aria-hidden="true">→</i>
+      <span role="listitem">Stock cover</span><i aria-hidden="true">→</i>
+      <span role="listitem">Availability</span><i aria-hidden="true">→</i>
+      <span role="listitem">Duplication</span><i aria-hidden="true">→</i>
+      <span role="listitem">Store mission</span><i aria-hidden="true">→</i>
+      <span role="listitem">Commercial checks</span><i aria-hidden="true">→</i>
+      <span class="flow-output" role="listitem">Expand · Retain · Reduce · Review</span>
+    </div>
+    <p class="framework-note">A product should not automatically receive more shelf space simply because its sales share exceeds its space share. Gross profit, stock turn, category role, availability, substitution risk, store mission and commercial agreements must also be considered.</p>
+  </section>
+
+  <section class="case-section dashboard-section" id="dashboard">
+    <div class="section-heading-row"><div><p class="eyebrow">Interactive dashboard</p><h2>Cluster and strategy scenario</h2></div><p>Change the controls above to update every connected output.</p></div>
 
   <section class="kpi-grid" id="kpis">
     <article class="kpi-card"><span>Category sales</span><strong id="salesKpi">RM528K</strong><small id="salesNote">Urban scenario estimate</small></article>
     <article class="kpi-card"><span>Gross profit</span><strong id="gpKpi">RM181K</strong><small id="gpNote">34.3% gross margin</small></article>
+    <article class="kpi-card"><span>Gross margin</span><strong id="marginKpi">34.3%</strong><small>Estimated scenario rate</small></article>
     <article class="kpi-card"><span>Sales / shelf metre</span><strong id="spaceKpi">RM4,650</strong><small id="spaceNote">+10.7% vs current</small></article>
+    <article class="kpi-card"><span>GP / shelf metre</span><strong id="gpSpaceKpi">RM1,595</strong><small>Gross-profit productivity</small></article>
+    <article class="kpi-card"><span>Stock cover</span><strong id="coverKpi">7.1 weeks</strong><small>Weighted category estimate</small></article>
     <article class="kpi-card"><span>SKUs to review</span><strong id="reviewKpi">14</strong><small>Low productivity or duplication</small></article>
+    <article class="kpi-card"><span>Slow-moving stock</span><strong id="slowKpi">RM52K</strong><small>Estimated inventory value</small></article>
   </section>
 
   <section class="dashboard-grid two-up">
     <article class="panel">
       <div class="panel-head"><div><p class="eyebrow">Space productivity</p><h2>Sales, profit and shelf-space share</h2></div></div>
-      <div class="chart-wrap tall" id="spaceChart"></div>
+      <div class="chart-wrap tall" id="spaceChart" aria-describedby="spaceChartDescription"></div>
+      <p class="sr-only" id="spaceChartDescription">Grouped bar chart comparing sales, gross-profit and space share for five synthetic product groups.</p>
       <p class="chart-note">A brand does not automatically deserve more space simply because sales share exceeds space share. Profit, category role, stock turn, availability and substitution risk must also be considered.</p>
     </article>
     <article class="panel">
@@ -73,15 +138,37 @@
     </article>
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><div><p class="eyebrow">SKU rationalisation</p><h2>Priority action list</h2></div><span class="small-note">Illustrative synthetic products</span></div>
-    <div class="table-scroll"><table>
-      <thead><tr><th>Product group</th><th>Sales share</th><th>Profit share</th><th>Space share</th><th>Stock cover</th><th>Recommendation</th><th>Reason</th></tr></thead>
-      <tbody id="actionRows"></tbody>
-    </table></div>
+  <section class="chart-grid">
+    <article class="panel"><div class="panel-head"><div><p class="eyebrow">Sales productivity</p><h2>Sales per shelf metre</h2></div></div><div class="chart-wrap compact" id="salesProductivityChart"></div></article>
+    <article class="panel"><div class="panel-head"><div><p class="eyebrow">Profit productivity</p><h2>GP per shelf metre</h2></div></div><div class="chart-wrap compact" id="gpProductivityChart"></div></article>
+    <article class="panel"><div class="panel-head"><div><p class="eyebrow">Space allocation</p><h2>Current vs proposed</h2></div></div><div class="chart-wrap compact" id="allocationChart"></div></article>
+  </section>
   </section>
 
-  <section class="dashboard-grid two-up">
+  <section class="case-section" id="insights">
+    <p class="eyebrow">Executive Insights</p>
+    <div class="section-heading-row"><h2>What requires management attention</h2><p>Insights update with the selected cluster and strategy.</p></div>
+    <div class="insight-grid" id="insightCards" aria-live="polite"></div>
+  </section>
+
+  <section class="case-section" id="recommendations">
+    <div class="panel">
+    <div class="panel-head"><div><p class="eyebrow">SKU rationalisation</p><h2>Priority action list</h2></div><span class="small-note">Illustrative synthetic products</span></div>
+    <div class="table-tools">
+      <label for="actionFilter">Filter recommendation
+        <select id="actionFilter"><option value="all">All actions</option><option value="Expand">Expand</option><option value="Retain">Retain</option><option value="Reduce">Reduce</option><option value="Review">Review</option></select>
+      </label>
+      <span id="tableStatus" class="small-note" aria-live="polite"></span>
+    </div>
+    <div class="table-scroll"><table>
+      <thead><tr><th><button type="button" data-sort="0">Product group</button></th><th><button type="button" data-sort="1">Sales share</button></th><th><button type="button" data-sort="2">Profit share</button></th><th><button type="button" data-sort="3">Space share</button></th><th><button type="button" data-sort="4">Sales / metre</button></th><th><button type="button" data-sort="5">GP / metre</button></th><th><button type="button" data-sort="6">Stock cover</button></th><th>Cluster relevance</th><th>Action</th><th>Reason</th><th>Implementation risk</th></tr></thead>
+      <tbody id="actionRows"></tbody>
+    </table></div>
+    </div>
+  </section>
+
+  <section class="case-section" id="cluster-analysis">
+  <div class="dashboard-grid two-up">
     <article class="panel">
       <div class="panel-head"><div><p class="eyebrow">Store clustering</p><h2>Assortment should vary by customer mission</h2></div></div>
       <div class="chart-wrap" id="clusterChart"></div>
@@ -99,21 +186,99 @@
       </table></div>
       <p class="chart-note">Proposed values are scenario estimates, not actual business results.</p>
     </article>
+  </div>
   </section>
 
-  <section class="method-panel">
-    <p class="eyebrow">How I approached it</p>
-    <h2>Business question → metrics → trade-offs → recommendation</h2>
-    <div class="method-grid">
-      <div><strong>1. Diagnose</strong><span>Compare sales, profit, shelf allocation, stock cover and SKU duplication.</span></div>
-      <div><strong>2. Segment</strong><span>Adjust assortment logic for urban, family and value-oriented store clusters.</span></div>
-      <div><strong>3. Simulate</strong><span>Reallocate space and estimate impact on productivity, profit and slow stock.</span></div>
-      <div><strong>4. Recommend</strong><span>Provide SKU-level actions with commercial reasoning and implementation risks.</span></div>
+  <section class="case-section" id="scenario">
+    <p class="eyebrow">What-if simulator</p>
+    <div class="section-heading-row"><h2>Test a controlled reallocation</h2><p>Assumptions are deliberately conservative and synthetic.</p></div>
+    <div class="simulator-layout">
+      <form class="simulator-controls" onsubmit="return false">
+        <label for="spaceRange">Space reallocated <output id="spaceOutput" for="spaceRange">8%</output>
+          <input id="spaceRange" type="range" min="0" max="20" value="8" step="1">
+        </label>
+        <label for="skuRange">SKU reduction <output id="skuOutput" for="skuRange">8 SKUs</output>
+          <input id="skuRange" type="range" min="0" max="20" value="8" step="1">
+        </label>
+        <label for="simStrategy">Simulator strategy
+          <select id="simStrategy"><option value="balanced">Balanced</option><option value="growth">Growth focused</option><option value="margin">Margin focused</option><option value="recovery">Inventory recovery</option></select>
+        </label>
+      </form>
+      <div class="panel simulator-results">
+        <div class="table-scroll"><table class="scenario-table"><thead><tr><th>Measure</th><th>Current</th><th>Proposed</th><th>Estimated change</th></tr></thead><tbody id="simulatorRows"></tbody></table></div>
+      </div>
     </div>
+    <p class="case-disclaimer">Scenario outputs are illustrative estimates based on synthetic assumptions. They are not actual achieved results and should not be treated as a financial forecast.</p>
+  </section>
+
+  <section class="impact-section" id="impact">
+    <p class="eyebrow">Business impact</p>
+    <h2>Estimated commercial effect</h2>
+    <div class="impact-grid" id="impactCards"></div>
+    <p id="impactInterpretation" class="impact-copy"></p>
+    <div class="chart-wrap compact" id="outcomesChart"></div>
+  </section>
+
+  <section class="case-section architecture-section" id="architecture">
+    <p class="eyebrow">Technical architecture</p>
+    <h2>From source data to business recommendation</h2>
+    <div class="architecture-flow">
+      <div class="source-stack"><span>POS / Sales</span><span>Inventory</span><span>Product master</span><span>Pricing</span><span>Promotion calendar</span><span>Store attributes</span><span>Supplier inputs</span></div>
+      <i aria-hidden="true">→</i><strong>Data validation and preparation</strong>
+      <i aria-hidden="true">→</i><strong>KPI and productivity engine</strong>
+      <i aria-hidden="true">→</i><strong>Store-cluster analysis</strong>
+      <i aria-hidden="true">→</i><strong>Recommendation rules</strong>
+      <i aria-hidden="true">→</i><strong>Scenario simulator</strong>
+      <i aria-hidden="true">→</i><strong>Dashboard and recommendation</strong>
+    </div>
+    <div class="tech-list" aria-label="Technologies"><span>Python</span><span>SQL</span><span>Polars / Pandas</span><span>JavaScript</span><span>HTML / CSS</span><span>Git</span><span>GitHub Pages</span></div>
+    <p class="framework-note">This portfolio demonstration is implemented as a static HTML, CSS and JavaScript application using synthetic data. The architecture shows how a production analytical workflow could be structured.</p>
+  </section>
+
+  <section class="method-panel" id="methodology">
+    <p class="eyebrow">How I approached it</p>
+    <h2>Business question → metrics → trade-offs → recommendation → validation</h2>
+    <div class="method-grid six-step">
+      <div><strong>1. Diagnose</strong><span>Compare sales, profit, space, stock cover, availability and duplication.</span></div>
+      <div><strong>2. Segment</strong><span>Define different needs for urban, family and value-focused stores.</span></div>
+      <div><strong>3. Score</strong><span>Calculate product and space productivity using consistent measures.</span></div>
+      <div><strong>4. Simulate</strong><span>Reallocate space and estimate conservative commercial impact.</span></div>
+      <div><strong>5. Recommend</strong><span>Assign Expand, Retain, Reduce or Review actions.</span></div>
+      <div><strong>6. Validate</strong><span>Check availability, commitments, substitution, cost and operational feasibility.</span></div>
+    </div>
+  </section>
+
+  <section class="case-section" id="risks">
+    <p class="eyebrow">Risks and limitations</p>
+    <div class="section-intro">
+      <h2>Recommendations require commercial validation.</h2>
+      <div class="limitation-grid">
+        <span>Synthetic data</span><span>No customer-path or heat-map data</span><span>No supplier-funding information</span><span>No exact planogram dimensions</span><span>No product-substitution model</span><span>No implementation-cost data</span>
+      </div>
+    </div>
+    <div class="validation-box">
+      <h3>Proposed validation approach</h3>
+      <ol><li>Select comparable test and control stores.</li><li>Monitor sales, gross profit, availability, stock turn and customer response.</li><li>Evaluate results over an agreed period.</li><li>Adjust the recommendation before broader rollout.</li></ol>
+      <p>Projected outcomes require controlled store testing and post-implementation measurement.</p>
+    </div>
+  </section>
+
+  <section class="case-section" id="future-enhancements">
+    <p class="eyebrow">Future enhancements</p>
+    <h2>What I would add next</h2>
+    <div class="enhancement-grid"><span>Demand elasticity modelling</span><span>Customer decision-tree integration</span><span>Automated product affinity analysis</span><span>Basket analysis</span><span>Behaviour-based store clustering</span><span>Shelf-image or planogram integration</span><span>Constrained shelf optimisation</span><span>Controlled-test measurement</span><span>Machine-learning recommendation engine</span></div>
+    <p class="chart-note">These capabilities are proposed future enhancements and are not implemented in the current demonstration.</p>
+  </section>
+
+  <section class="final-recommendation" id="final-recommendation">
+    <p class="eyebrow">Final recommendation</p>
+    <h2 id="finalRecommendationTitle">Rebalance selectively, protect the core and validate through controlled pilots.</h2>
+    <p id="finalRecommendationCopy">Use the selected cluster and strategy to prioritise productive ranges while applying availability, substitution and supplier checks before implementation.</p>
+    <div class="case-actions"><a href="../index.html#projects">Back to portfolio</a><a href="../resume/Haniy_Turana_Master_Resume.pdf" target="_blank" rel="noopener">View résumé</a><a href="https://github.com/haniyturana" target="_blank" rel="noopener">GitHub</a><a href="mailto:haniy.turana@gmail.com">Contact</a></div>
   </section>
 </main>
 <script src="dashboard.js"></script>
-<script>
+<script type="text/plain" id="legacySpaceRangeData">
 const productGroupLabels=['Premium','Core','Value','Family packs','Travel sizes'];
 svgGroupedBarChart(document.getElementById('clusterChart'),['Premium','Core','Value','Family packs'],[
  {name:'Urban',values:[38,32,14,16]},
@@ -164,5 +329,6 @@ function renderScenario(type){
 document.getElementById('storeType').addEventListener('change',e=>renderScenario(e.target.value));
 renderScenario('urban');
 </script>
+<script src="space-range.js"></script>
 </body>
 </html>

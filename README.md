@@ -9,8 +9,9 @@ engineering.
 ## Featured work
 
 - **Retail Space & Range Optimisation** — an interactive case study covering
-  store clustering, shelf-space productivity, SKU rationalisation and scenario
-  modelling.
+  the business problem, decision framework, store clustering, shelf-space and
+  gross-profit productivity, SKU rationalisation, scenario modelling,
+  implementation risks and a controlled-test recommendation.
 - **Product Sales Growth Treemap** — an interactive view of product-level
   year-over-year performance.
 - **Retail Demand Forecasting** — a dashboard translating demand forecasts into
@@ -42,6 +43,35 @@ README.md           Project documentation
 Open `index.html` directly in a browser, or open the folder in VS Code and use
 the Live Server extension.
 
+The Live Server option is recommended when testing navigation and interactive
+project pages:
+
+1. Open the repository folder in VS Code.
+2. Right-click `index.html`.
+3. Select **Open with Live Server**.
+4. Test the homepage and every link under `projects/`.
+
+## Space & Range interactive controls
+
+The featured case study uses synthetic assumptions and includes:
+
+- Store-cluster selection for urban, family and value-focused missions.
+- Balanced, growth, margin and inventory-recovery strategies.
+- Connected KPI, chart, insight and recommendation updates.
+- A sortable and filterable SKU action table.
+- Space-reallocation and SKU-reduction simulator controls.
+- Current-versus-proposed outcomes and implementation trade-offs.
+
+All outputs are illustrative decision-support examples, not financial forecasts
+or achieved business results.
+
+## Accessibility
+
+The portfolio includes semantic landmarks, keyboard-accessible project cards,
+visible focus states, skip navigation, labelled form controls, accessible SVG
+chart descriptions, responsive tables and reduced-motion support. Interactive
+information is communicated with text labels as well as colour.
+
 ## Publish with GitHub Pages
 
 This site is published from the `main` branch and repository root.
@@ -56,8 +86,22 @@ This site is published from the `main` branch and repository root.
 Do not upload the portfolio as one outer folder. GitHub Pages must find
 `index.html` directly at the publishing root.
 
+## Deployment checklist
+
+- Confirm `index.html` is at the repository root.
+- Upload the complete `projects/` and `resume/` folders.
+- Preserve filename casing because GitHub Pages paths are case-sensitive.
+- Confirm the résumé, GitHub, LinkedIn and external-project URLs.
+- Test the Space & Range cluster, strategy, table and simulator controls.
+- Test the Forecasting category and horizon controls.
+- Check desktop and mobile layouts.
+- Wait for the GitHub Pages deployment to show a green status.
+- Use a hard refresh after deployment if an older cached page appears.
+
 ## Data notice
 
 The portfolio dashboards use synthetic or sanitised data for demonstration.
 Figures are illustrative and do not represent confidential employer
-information.
+information. The Space & Range case study is independent portfolio work, is not
+based on Watsons data and does not represent Watsons’ actual operations,
+results or commercial decisions.

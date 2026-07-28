@@ -42,3 +42,13 @@ function animateTextValue(element, finalText){
  }
  requestAnimationFrame(frame);
 }
+
+const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function formatNumber(value,decimals=0){return Number(value).toLocaleString(undefined,{minimumFractionDigits:decimals,maximumFractionDigits:decimals})}
+function formatCurrency(value,decimals=0){return `RM${formatNumber(value,decimals)}`}
+function formatPercent(value,decimals=1){const number=Number(value);return `${number>0?'+':''}${number.toFixed(decimals)}%`}
+function updateKpi(id,value){const element=document.getElementById(id);if(element)animateTextValue(element,String(value))}
+function sortObjects(rows,key,direction=1){return [...rows].sort((a,b)=>{const av=a[key],bv=b[key];return(typeof av==='string'?av.localeCompare(bv):av-bv)*direction})}
+function filterObjects(rows,key,value,allValue='all'){return value===allValue?[...rows]:rows.filter(row=>row[key]===value)}
+function bindTableSort(container,callback){container.querySelectorAll('[data-sort-key]').forEach(button=>button.addEventListener('click',()=>callback(button.dataset.sortKey)))}
+function renderInsightCards(container,insights){container.innerHTML=insights.map(item=>`<article class="insight-card"><div class="insight-top"><span>${item.context||'Executive insight'}</span>${item.badge||''}</div><h3>${item.title}</h3>${item.metrics||''}<p>${item.copy}</p></article>`).join('')}

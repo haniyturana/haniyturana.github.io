@@ -12,14 +12,17 @@ engineering.
   the business problem, decision framework, store clustering, shelf-space and
   gross-profit productivity, SKU rationalisation, scenario modelling,
   implementation risks and a controlled-test recommendation.
+- **Retail Demand Forecasting** — a reactive decision engine combining category,
+  horizon, service-level, lead-time and scenario controls with SKU reorder
+  recommendations.
+- **Inventory Reconciliation** — a cross-system exception intelligence case
+  with warehouse, status, type, priority, age and value filters, sortable
+  exceptions and investigation trails.
+- **Pricing & Clearance Simulator** — a five-strategy commercial model with
+  adjustable stock, price, markdown, clearance, fees, write-off and holding
+  assumptions plus objective-based recommendations.
 - **Product Sales Growth Treemap** — an interactive view of product-level
   year-over-year performance.
-- **Retail Demand Forecasting** — a dashboard translating demand forecasts into
-  inventory recommendations.
-- **Inventory Reconciliation** — a cross-system exception dashboard for ERP,
-  OMS, WMS and warehouse records.
-- **Pricing & Clearance Simulator** — a comparison of commercial clearance
-  strategies.
 - Additional Spark, Hadoop and NoSQL analytics projects.
 
 ## Technologies
@@ -65,6 +68,21 @@ The featured case study uses synthetic assumptions and includes:
 All outputs are illustrative decision-support examples, not financial forecasts
 or achieved business results.
 
+## Other interactive case-study controls
+
+- **Forecasting:** category, horizon, service level, lead time and demand
+  scenario; connected KPIs, charts, insights and sortable SKU actions.
+- **Reconciliation:** operational and financial filters; connected exception
+  KPIs, six diagnostic charts, a sortable exception table and expandable
+  investigation trails.
+- **Pricing:** twelve commercial assumptions including sliders for discount,
+  clearance and period; five strategies; six charts; detailed economics; and
+  recommendations for profit, cash, speed, simplicity or balance.
+
+Every case study includes its business problem, decision framework,
+methodology, limitations, implementation considerations and links to the other
+case studies.
+
 ## Accessibility
 
 The portfolio includes semantic landmarks, keyboard-accessible project cards,
@@ -94,6 +112,9 @@ Do not upload the portfolio as one outer folder. GitHub Pages must find
 - Confirm the résumé, GitHub, LinkedIn and external-project URLs.
 - Test the Space & Range cluster, strategy, table and simulator controls.
 - Test the Forecasting category and horizon controls.
+- Test Reconciliation filters, table sorting and investigation details.
+- Test Pricing inputs, sliders and every decision objective, including optional
+  costs set to zero.
 - Check desktop and mobile layouts.
 - Wait for the GitHub Pages deployment to show a green status.
 - Use a hard refresh after deployment if an older cached page appears.
@@ -102,6 +123,6 @@ Do not upload the portfolio as one outer folder. GitHub Pages must find
 
 The portfolio dashboards use synthetic or sanitised data for demonstration.
 Figures are illustrative and do not represent confidential employer
-information. The Space & Range case study is independent portfolio work, is not
-based on Watsons data and does not represent Watsons’ actual operations,
-results or commercial decisions.
+information. The Space & Range case study is independent portfolio work and
+does not represent any employer’s actual operations, results or commercial
+decisions.

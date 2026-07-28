@@ -59,6 +59,19 @@
       </div>
     </section>
 
+    <section class="section-shell problem-solving reveal" aria-labelledby="problem-solving-title">
+      <p class="eyebrow">How I solve problems</p>
+      <h2 id="problem-solving-title">From an ambiguous question to a controlled decision.</h2>
+      <ol class="problem-solving-flow">
+        <li><span>01</span><strong>Frame</strong><small>Define the business question, decision owner and success measure.</small></li>
+        <li><span>02</span><strong>Connect</strong><small>Reconcile the data, assumptions and operational context.</small></li>
+        <li><span>03</span><strong>Analyse</strong><small>Model scenarios, quantify trade-offs and test edge cases.</small></li>
+        <li><span>04</span><strong>Recommend</strong><small>Translate evidence into a clear, governed action.</small></li>
+        <li><span>05</span><strong>Measure</strong><small>Track results, risks and learning after implementation.</small></li>
+      </ol>
+      <div class="illustrative-results" aria-label="Illustrative portfolio outputs"><strong>Illustrative portfolio outputs</strong><span>Connected decision controls</span><span>SKU-level actions</span><span>Scenario trade-offs</span><span>Implementation guardrails</span></div>
+    </section>
+
     <section id="projects" class="section-shell content-section">
       <p class="eyebrow reveal">Selected work</p>
       <div class="section-heading reveal"><h2>Business case studies built around real commercial decisions.</h2><p>Each case study shows how I move from a business problem to analysis, insight, recommendation and measurable decision support. Descriptions use sanitised or synthetic data.</p></div>
@@ -72,26 +85,37 @@
           <div class="tags"><span>Retail Analytics</span><span>Space Productivity</span><span>Range Review</span><span>Scenario Modelling</span></div>
           <dl><div><dt>Demo output</dt><dd>Store clustering, SKU rationalisation and before-vs-after commercial scenario</dd></div></dl>
         </a>
-        <a class="project-card reveal" href="https://haniyturana.github.io/ProductSale-Performance-Treemap/Product_Sales_Growth_2026_vs_2025.html" target="_blank" rel="noopener" aria-label="Open Product Sales Growth Treemap">
-          <div class="project-card-top"><span class="project-number">02</span><span class="project-link">Open live project ↗</span></div>
-          <h3>Product Sales Growth Treemap</h3>
-          <p>Interactive product-level view of sales growth and decline, designed to help users identify category and SKU performance patterns quickly.</p>
-          <div class="tags"><span>Retail Analytics</span><span>Treemap</span><span>YoY Growth</span></div>
-          <dl><div><dt>Live output</dt><dd>Visual SKU and category comparison across periods</dd></div></dl>
-        </a>
-        <a class="project-card reveal" href="projects/forecasting.html?v=2" aria-label="Open Retail Demand Forecasting dashboard">
-          <div class="project-card-top"><span class="project-number">03</span><span class="project-link">Read case study →</span></div>
+        <a class="project-card reveal" href="projects/forecasting.html" aria-label="Open Retail Demand Forecasting case study">
+          <div class="project-card-top"><span class="project-number">02</span><span class="project-link">Read case study →</span></div>
+          <p class="case-type">Inventory decision case study</p>
           <h3>Retail Demand Forecasting Engine</h3>
-          <p>Forecasts SKU-level demand using transaction history, campaigns, pricing and seasonality, then converts uncertainty into inventory recommendations.</p>
-          <div class="tags"><span>Python</span><span>Polars</span><span>XGBoost</span><span>LightGBM</span></div>
-          <dl><div><dt>Demo output</dt><dd>Forecast accuracy, demand trend, safety stock and reorder points</dd></div></dl>
+          <p>Converts uncertain SKU demand into service-level, safety-stock and reorder decisions.</p>
+          <div class="tags"><span>Forecasting</span><span>Inventory</span><span>Scenario Modelling</span></div>
+          <dl><div><dt>Business problem</dt><dd>Balance availability against excess stock.</dd></div><div><dt>Analytical approach</dt><dd>Demand, error, lead-time and service-level scenarios.</dd></div><div><dt>Decision output</dt><dd>Prioritised SKU replenishment recommendations.</dd></div></dl>
         </a>
-        <a class="project-card reveal" href="projects/reconciliation.html" aria-label="Open Inventory Reconciliation dashboard">
+        <a class="project-card reveal" href="projects/reconciliation.html" aria-label="Open Inventory Reconciliation case study">
+          <div class="project-card-top"><span class="project-number">03</span><span class="project-link">Read case study →</span></div>
+          <p class="case-type">Operational intelligence case study</p>
+          <h3>Enterprise Inventory Reconciliation</h3>
+          <p>Turns cross-system stock mismatches into an actionable exception queue and investigation trail.</p>
+          <div class="tags"><span>ERP</span><span>OMS</span><span>WMS</span><span>Exception Analytics</span></div>
+          <dl><div><dt>Business problem</dt><dd>Find material discrepancies before they become operational loss.</dd></div><div><dt>Analytical approach</dt><dd>System comparison, ageing, value and root-cause segmentation.</dd></div><div><dt>Decision output</dt><dd>Prioritised exceptions with investigation actions.</dd></div></dl>
+        </a>
+        <a class="project-card reveal" href="projects/pricing.html" aria-label="Open Pricing and Clearance case study">
           <div class="project-card-top"><span class="project-number">04</span><span class="project-link">Read case study →</span></div>
-          <h3>Inventory Reconciliation Analytics</h3>
-          <p>Connects ERP, OMS, WMS and warehouse records to identify stock gaps, status mismatches, delayed postings and unresolved movements.</p>
-          <div class="tags"><span>Python</span><span>SQL</span><span>ETL</span><span>APIs</span></div>
-          <dl><div><dt>Demo output</dt><dd>System balances, exception categories and priority investigation list</dd></div></dl>
+          <p class="case-type">Commercial strategy case study</p>
+          <h3>Pricing &amp; Clearance Strategy Simulator</h3>
+          <p>Compares five inventory-exit routes across cash, profit, recovery, speed and residual risk.</p>
+          <div class="tags"><span>Pricing</span><span>Margin</span><span>Cash Recovery</span><span>Simulation</span></div>
+          <dl><div><dt>Business problem</dt><dd>Release ageing stock without hiding the economic trade-off.</dd></div><div><dt>Analytical approach</dt><dd>Channel-cost and clearance-response scenario engine.</dd></div><div><dt>Decision output</dt><dd>Objective-led route recommendation and economics.</dd></div></dl>
+        </a>
+        <a class="project-card reveal" href="https://haniyturana.github.io/ProductSale-Performance-Treemap/Product_Sales_Growth_2026_vs_2025.html" target="_blank" rel="noopener" aria-label="Open Product Sales Growth Treemap">
+          <div class="project-card-top"><span class="project-number">05</span><span class="project-link">Open live project ↗</span></div>
+          <p class="case-type">Visual analytics project</p>
+          <h3>Product Sales Growth Treemap</h3>
+          <p>Interactive product-level view of sales growth and decline for rapid category and SKU pattern detection.</p>
+          <div class="tags"><span>Retail Analytics</span><span>Treemap</span><span>YoY Growth</span></div>
+          <dl><div><dt>Decision output</dt><dd>Visual SKU and category comparison across periods.</dd></div></dl>
         </a>
       </div>
       <div class="technical-projects reveal">
@@ -99,7 +123,6 @@
         <div class="technical-links">
           <a href="https://spark-nosql-movielens-pipeline-8bqtkcs3m7uoie6nmjs4hm.streamlit.app/" target="_blank" rel="noopener">Spark + NoSQL MovieLens Pipeline ↗</a>
           <a href="https://hadoop-spark-zeppelin-retail-analytics-tq4rjpsnn9pns3z8nm9hwb.streamlit.app/" target="_blank" rel="noopener">Hadoop + Spark Retail Analytics ↗</a>
-          <a href="projects/pricing.html">Pricing &amp; Clearance Simulator →</a>
         </div>
       </div>
     </section>

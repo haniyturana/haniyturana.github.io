@@ -277,4 +277,5 @@ document.querySelectorAll('[data-sort]').forEach(button => button.addEventListen
   srRenderTable();
 }));
 ['spaceRange', 'skuRange', 'simStrategy'].forEach(id => document.getElementById(id).addEventListener('input', srRenderSimulator));
+document.getElementById('simulatorControls').addEventListener('submit', event => event.preventDefault());
 srRenderCase();

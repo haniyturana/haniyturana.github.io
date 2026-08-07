@@ -63,7 +63,7 @@ synthetic data and do not expose production credentials.
 
 ## Link verification
 
-The homepage, Product Sales Growth Treemap, Inventra demo, Inventra GitHub
+The homepage, Product Sales Growth Treemap, InvTracker demo, InvTracker GitHub
 repository, both Streamlit projects, GitHub profile and Google Fonts stylesheet
 returned HTTP 200 on 31 July 2026. LinkedIn returned its automated-request
 blocking status 999; the public HTTPS profile URL was retained because this is

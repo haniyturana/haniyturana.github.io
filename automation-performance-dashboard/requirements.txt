@@ -1,0 +1,4 @@
+streamlit>=1.36.0
+polars>=1.8.0
+plotly>=5.22.0
+pytest>=8.0.0

@@ -1,4 +1,6 @@
-streamlit>=1.36.0
-polars>=1.8.0
-plotly>=5.22.0
-pytest>=8.0.0
+# Pin the UI stack so Streamlit Community Cloud does not combine a cached
+# frontend from one release with the Python backend from another release.
+streamlit==1.61.1
+polars==1.43.2
+plotly==6.9.0
+pytest==9.1.1

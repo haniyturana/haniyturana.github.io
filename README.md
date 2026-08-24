@@ -23,6 +23,9 @@ engineering.
   assumptions plus objective-based recommendations.
 - **Product Sales Growth Treemap** — an interactive view of product-level
   year-over-year performance.
+- **Jewellery Retail Performance & Campaign Intelligence** — a synthetic
+  multi-outlet and e-commerce case study connecting commercial performance,
+  inventory health, campaign uplift and prioritised operating actions.
 - Additional Spark, Hadoop and NoSQL analytics projects.
 
 ## Technologies

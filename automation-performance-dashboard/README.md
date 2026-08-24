@@ -84,6 +84,11 @@ streamlit run app.py
 6. Ensure data files are included in the repository root or data directory.
 7. Deploy and monitor the app after the initial launch.
 
+If a deployment reports `Failed to fetch dynamically imported module`, reboot
+the app from Streamlit Community Cloud and hard-refresh the browser. The UI
+dependencies are pinned in `requirements.txt` so a reboot installs one
+consistent frontend/backend version.
+
 ## Future improvements
 - Add client-specific drill-down pages
 - Include exportable PDF reports

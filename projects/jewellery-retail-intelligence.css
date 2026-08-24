@@ -4,4 +4,5 @@
 @media(max-width:430px){.sidebar nav,.filters,.kpi-grid,.kpi-grid.small{grid-template-columns:1fr}.filter-title,#filterStatus{grid-column:auto}.chart,.chart.tall{height:235px}.app-header h1{font-size:.95rem}}
 @media(prefers-reduced-motion:reduce){.view{animation:none}}
 body{overflow-x:hidden}
+.inventory-drill{margin-bottom:14px;border-left:4px solid var(--teal)}.inventory-drill button{border:1px solid var(--teal);border-radius:7px;background:#fff;color:var(--teal);padding:7px 10px;font-weight:800;cursor:pointer}.svg-chart .axis-zero{stroke:#738194;stroke-width:1.4}.svg-chart .axis-label{font-size:9px}
 @media(max-width:760px){.app-header>div{width:210px;min-width:0}.app-header h1{max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.app-header button{flex:0 0 auto}.dashboard-main{width:100vw;max-width:100%;overflow:hidden}.view,.panel{width:100%;max-width:100%;min-width:0}.view-head h2{max-width:100%;overflow-wrap:anywhere;word-break:normal}}

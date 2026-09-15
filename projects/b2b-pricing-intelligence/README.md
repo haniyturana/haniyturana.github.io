@@ -1,6 +1,6 @@
 # B2B Pricing Intelligence
 
-Static HTML/CSS/JavaScript dashboard with Plotly. No Python backend is required. The portfolio homepage links to `projects/b2b-pricing-intelligence/`.
+Static HTML/CSS/JavaScript diagnostic dashboard with Plotly. It identifies unusual customer-SKU pricing relationships for commercial review. No Python backend is required. The portfolio homepage links to `projects/b2b-pricing-intelligence/` alongside the Jewellery case study.
 
 ## Reproduce
 
@@ -19,10 +19,12 @@ Do not publish `.data-cache`, virtual environments, or raw datasets. A Git commi
 
 ## Interpretation
 
-The separate **Commercial Pricing Simulator — Scenario Analysis** runs entirely in JavaScript with blank inputs. All costs, warranty probabilities, current prices and benchmarks are user-defined. Warranty period supplies context only; positive claim probability requires explicit confirmation that it covers the entered period. The simulator uses `cost to serve / (1 - target gross margin)` for the Recommended Price Floor. Its outputs do not change historical KPIs, review recommendations or modelled revenue opportunities.
+The separate **Commercial Pricing Simulator — Scenario Analysis** runs entirely in JavaScript with blank inputs. All costs, warranty probabilities, current prices and benchmarks are user-defined. Warranty period supplies context only; positive claim probability requires explicit confirmation that it covers the entered period. The simulator uses `cost to serve / (1 - target gross margin)` for the Recommended Price Floor. Its outputs do not change historical KPIs or diagnostic review statuses.
 
-Period revenue includes cleaned positive transactions, including missing-customer revenue. Customer analysis excludes unidentified customers. Exact duplicates, non-product stock codes and positive extremes are retained to match the supplied cleaning rules. This may affect commercial interpretation; inspect outlier tables in the notebook before making decisions. Customer IDs are account proxies, not verified B2B entities.
+The executive Total Identified Revenue KPI excludes unidentified customers. Overall cleaned revenue, including missing-customer revenue, remains in notebook data-quality totals. Exact duplicates, non-product stock codes and positive extremes are retained to match the supplied cleaning rules. This may affect commercial interpretation; inspect outlier tables in the notebook before making decisions. Customer IDs are account proxies, not verified B2B entities. Small/Medium/Large/Strategic are descriptive revenue-based segments, not contractual tiers.
 
-The opportunity count denotes rule-based reviews, not proven leakage. The displayed monetary opportunity sums only positive simulated impacts for eligible increase-review candidates; negative and missing estimates remain visible in the matrix. The sum is neither a net portfolio forecast nor a guaranteed return. Regressions are observational and uncontrolled for seasonality, customer mix and availability. No actual margin is claimed.
+Pricing Review cases have a material below-median price gap and at-or-below-median customer-SKU quantity. Possible Volume Justification cases have higher quantity. Both require at least 10 SKU customers, 30 SKU orders and 3 customer-SKU orders. The notebook's `gap_threshold` defaults to 0.15: a configurable screening choice, not an economically optimal threshold. Review flags do not establish that prices should increase.
+
+Exploratory regressions and hypothetical historical sensitivity remain separate from review logic. No proposed customer price, confidence label or monetary opportunity is exported. Seasonality, inventory availability and customer mix are uncontrolled; promotions and contracts are unavailable. Historical sensitivity is not forecast revenue or a recommended price. No actual margin is claimed.
 
 Source: Chen, D. (2012). [Online Retail II](https://doi.org/10.24432/C5CG6D), UCI Machine Learning Repository. CC BY 4.0. Data has been cleaned and aggregated for this case study.

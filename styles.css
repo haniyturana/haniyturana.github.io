@@ -67,3 +67,12 @@
 @media(max-width:760px){.featured-grid{grid-template-columns:minmax(0,1fr)}.featured-card{padding:24px}.project-card{padding:24px}.technical-projects{grid-template-columns:minmax(0,1fr);gap:18px;padding:24px}}
 @media(max-width:390px){.outcome-strip{grid-template-columns:minmax(0,1fr)}.project-link{width:100%}}
 @media(prefers-reduced-motion:reduce){.technical-links a{transition:none}}
+
+/* Matched retail and pricing case studies; shared rows align content and links. */
+.intelligence-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:24px}
+.intelligence-grid>.project-card{display:grid;grid-template-rows:subgrid;grid-row:span 9;row-gap:0}
+.intelligence-grid .project-number{margin:0 0 10px}
+.intelligence-grid .tags{align-content:start}
+.intelligence-grid dl{display:grid;grid-template-rows:subgrid;grid-row:span 3}
+.intelligence-grid .project-link{align-self:end}
+@media(max-width:760px){.intelligence-grid{grid-template-columns:minmax(0,1fr);gap:24px}.intelligence-grid>.project-card{display:flex;grid-row:auto}.intelligence-grid dl{display:block}.intelligence-grid .project-link{align-self:flex-start}}

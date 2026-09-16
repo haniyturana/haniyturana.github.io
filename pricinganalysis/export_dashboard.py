@@ -1,9 +1,10 @@
-"""Run export_dashboard(df) after existing cleaning. Never loads or cleans raw data."""
+"""Export existing cleaned transactions using the canonical merchandise master."""
 from pathlib import Path
 import json
 import gzip
 import numpy as np
 import pandas as pd
+from load_uci import clean_product_master
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / 'projects/b2b-pricing-intelligence/data'
 
@@ -28,6 +29,9 @@ def export_dashboard(df, output=DEFAULT_OUTPUT, gap_threshold=.15):
         raise ValueError('Cleaned-data preconditions failed; no rows were removed.')
     if d.InvoiceNo.astype(str).str.upper().str.startswith('C').any() or not np.allclose(d.Revenue, d.Quantity*d.UnitPrice):
         raise ValueError('Cancelled invoices or Revenue mismatch; inspect upstream cleaning.')
+    d = clean_product_master(d)
+    if d.empty:
+        raise ValueError('No merchandise transactions available.')
     quality = {'date_start': str(d.InvoiceDate.min().date()), 'date_end': str(d.InvoiceDate.max().date()), 'rows': len(d), 'orders': d.InvoiceNo.nunique(), 'total_revenue': d.Revenue.sum(), 'missing_customer_rows': int(d.CustomerID.isna().sum()), 'missing_customer_revenue': d.loc[d.CustomerID.isna(),'Revenue'].sum(), 'quantity_p999': d.Quantity.quantile(.999), 'price_p999': d.UnitPrice.quantile(.999), 'max_quantity': d.Quantity.max(), 'max_price': d.UnitPrice.max()}
     d = d.loc[d.CustomerID.notna()].copy()
     if d.empty:
@@ -52,7 +56,7 @@ def export_dashboard(df, output=DEFAULT_OUTPUT, gap_threshold=.15):
     p = p.merge(latest).merge(c[['CustomerID','segment']])
     s = p.groupby('StockCode').agg(customers=('CustomerID','nunique'), benchmark=('price','median'), minimum=('price','min'), maximum=('price','max'), quantity=('quantity','sum'), revenue=('revenue','sum')).reset_index()
     counts = d.groupby('StockCode').agg(transactions=('InvoiceNo','size'), orders=('InvoiceNo','nunique')).reset_index()
-    s = s.merge(counts).merge(d.sort_values('InvoiceDate').groupby('StockCode').Description.last().fillna('').reset_index())
+    s = s.merge(counts).merge(d[['StockCode', 'Description']].drop_duplicates('StockCode'))
     s['weighted_price'] = s.revenue/s.quantity
     s['spread'] = (s.maximum-s.minimum)/s.benchmark
     s['eligible'] = (s.customers>=10)&(s.orders>=30)

@@ -3,3 +3,8 @@
 .commercial-section{border-top:4px solid #168b80}.commercial-section h2{margin-top:12px}.commercial-section .filters label{flex:1 1 230px}.confirm-label{display:flex;flex-direction:row;align-items:center;line-height:1.5;margin-top:12px}.framework{padding:18px;background:#edf5f4;border-radius:8px}main>p a{display:inline;color:#087f73}
 
 #dispersion label{max-width:100%}#sku{width:100%;max-width:500px}.chart-key{display:flex;flex-wrap:wrap;gap:6px 20px}.chart-key span::before{content:'';display:inline-block;width:22px;margin-right:7px;vertical-align:middle;border-top:2px solid #63778e}.chart-key .threshold-key::before{border-top:2px dashed #c17b35}
+
+.suggested-row td{background:#e5f5ef;font-weight:600}.cards>*{min-width:0}.card strong{overflow-wrap:anywhere}.table-wrap{max-width:100%;overscroll-behavior-x:contain}section,label,.filters{min-width:0}#test-suggested{background:#087f73;color:white;font-weight:600}#suggestion-state{color:#087f73}#opportunity-product{font-weight:600}#segmentChart .point{cursor:pointer}#commercial-comparison td:last-child{min-width:100px}details .chart{width:100%}#modelStats td:last-child{min-width:240px}select{width:100%;max-width:100%}#method details{margin-bottom:18px}
+@media(max-width:550px){.cards{grid-template-columns:1fr}.chart{height:350px}.filters label{max-width:100%;width:100%}#sku{max-width:100%}.card strong{font-size:23px}}
+
+#suggestion-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:850px){#suggestion-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:550px){#suggestion-kpis{grid-template-columns:1fr}}

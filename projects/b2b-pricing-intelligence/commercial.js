@@ -16,7 +16,8 @@ function commercial(){
   const ids=['cost','months','claimRate','claimCost','service','target','current','benchmark'];
   const values=Object.fromEntries(ids.map(id=>[id,$('commercial-'+id).value.trim()===''?null:Number($('commercial-'+id).value)]));
   values.confirmed=$('commercial-confirm').checked;
-  let r;try{r=calculateCommercialScenario(values);}catch(e){$('commercial-status').textContent=e.message;$('commercial-kpis').innerHTML='';$('commercial-decision').textContent='';if(window.Plotly)Plotly.purge('commercial-waterfall');return;}
+  let r;try{r=calculateCommercialScenario(values);}catch(e){renderCommercialComparison(null);$('commercial-status').textContent=e.message;$('commercial-kpis').innerHTML='';$('commercial-decision').textContent='';if(window.Plotly)Plotly.purge('commercial-waterfall');return;}
+  renderCommercialComparison(r);
   $('commercial-status').textContent=`User-defined scenario · ${fmt(values.months)}-month warranty · ${fmt(values.claimRate)}% claim probability across that period. Duration is context; it does not multiply warranty cost.`;
   const cards=[['Cost to serve',gbp(r.serve),'Per unit'],['Expected warranty cost / unit',gbp(r.warranty),'Probability × average claim cost'],['Required price for target margin',gbp(r.required),'Recommended Price Floor'],['Current gross margin',pct(r.margin),r.profit==null?'Enter current selling price':`Gross profit per unit: ${gbp(r.profit)}`],['Price gap vs required price',gbp(r.requiredGap),'Current price − required price'],['Price gap vs market benchmark',gbp(r.benchmarkGap),'Required price − user-defined benchmark']];
   $('commercial-kpis').innerHTML=cards.map(c=>`<div class="card">${esc(c[0])}<strong>${esc(c[1])}</strong><span>${esc(c[2])}</span></div>`).join('');
@@ -28,6 +29,28 @@ function commercial(){
   $('commercial-decision').textContent=messages.join(' ');
   chart('commercial-waterfall',[{type:'waterfall',orientation:'v',measure:['relative','relative','relative','total','relative','total'],x:['Product cost','Warranty provision','Service cost','Cost to serve','Required margin','Recommended price floor'],y:[values.cost,r.warranty,values.service,0,r.marginAmount,0],text:[values.cost,r.warranty,values.service,r.serve,r.marginAmount,r.required].map(gbp),textposition:'outside',connector:{line:{color:'#aebdcb'}},increasing:{marker:{color:'#168b80'}},totals:{marker:{color:'#203e59'}},hovertemplate:'%{x}<br>%{text}<extra></extra>'}],'','Scenario amount per unit (GBP)');
 }
+let commercialContext=null;
+function commercialComparison(context,current,proposed,serve){
+  const same=(a,b)=>Number.isFinite(a)&&Math.abs(a-b)<=1e-9*Math.max(1,Math.abs(b));
+  const demandFor=price=>context?.rows.find(r=>same(price,r.price))?.quantity??null;
+  const make=price=>{const demand=demandFor(price),revenue=price!=null&&demand!=null?price*demand:null;return {price,demand,revenue,cost:serve,profit:serve!=null&&revenue!=null?revenue-serve*demand:null,margin:serve!=null&&price>0?(price-serve)/price:null};};
+  return {current:make(current),proposed:make(proposed)};
+}
+function renderCommercialComparison(result){
+  const price=id=>{const raw=$(id).value.trim(),v=Number(raw);return raw!==''&&Number.isFinite(v)&&v>0?v:null;};
+  const pair=commercialComparison(commercialContext,price('commercial-current'),price('commercial-proposed'),result?.serve??null);
+  const fields=[['Selling price / unit','price',gbp],['Model-implied demand','demand',fmt],['Revenue','revenue',gbp],['Cost to serve / unit','cost',gbp],['Gross profit (period total)','profit',gbp],['Gross margin','margin',pct]];
+  table('commercial-comparison',fields.map(([label,key,format])=>({label,current:format(pair.current[key]),proposed:format(pair.proposed[key]),change:pair.current[key]!=null&&pair.proposed[key]!=null?(key==='margin'?`${fmt(100*(pair.proposed[key]-pair.current[key]))} pp`:format(pair.proposed[key]-pair.current[key])):'—'})),[['Measure','label'],['Current','current'],['Suggested scenario','proposed'],['Change','change']]);
+  $('comparison-status').textContent=(result?'':'Enter cost assumptions to evaluate profitability. ')+(commercialContext?'Demand uses the existing tested scenarios over the same historical period. Editing either price to an untested value leaves its demand, revenue and total profit unavailable.':'Use Test Suggested Price to compare historical scenario demand and revenue.');
+}
+$('test-suggested').onclick=()=>{
+  if(!priceSuggestion)return;
+  commercialContext={...priceSuggestion,sku:$('sku').value};
+  $('commercial-current').value=priceSuggestion.baseline.price;
+  $('commercial-proposed').value=priceSuggestion.suggested.price;
+  $('commercial-context').textContent=`SKU ${commercialContext.sku} · historical reference vs suggested scenario across the full observed period. Cost assumptions below remain user-defined. This scenario stays selected until replaced or cleared.`;
+  commercial();$('commercial').scrollIntoView({behavior:'smooth'});$('commercial-proposed').focus({preventScroll:true});
+};
 document.querySelectorAll('#commercial input').forEach(input=>input.addEventListener('input',()=>{if(input.id==='commercial-months')$('commercial-confirm').checked=false;commercial();}));
-$('commercial-reset').onclick=()=>{document.querySelectorAll('#commercial input').forEach(i=>{if(i.type==='checkbox')i.checked=false;else i.value='';});commercial();};
+$('commercial-reset').onclick=()=>{commercialContext=null;$('commercial-context').textContent='No historical scenario selected.';document.querySelectorAll('#commercial input').forEach(i=>{if(i.type==='checkbox')i.checked=false;else i.value='';});commercial();};
 commercial();

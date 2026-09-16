@@ -2,6 +2,7 @@
 import functools
 import http.server
 import json
+import os
 from pathlib import Path
 import threading
 from playwright.sync_api import sync_playwright
@@ -16,6 +17,8 @@ try:
     with sync_playwright() as pw:
         browser=pw.chromium.launch(channel='msedge',headless=True)
         page=browser.new_page(viewport={'width':1440,'height':1000},reduced_motion='reduce')
+        if os.environ.get('PLOTLY_TEST_JS'):
+            page.route('https://cdn.plot.ly/plotly-2.35.2.min.js',lambda route:route.fulfill(path=os.environ['PLOTLY_TEST_JS'],content_type='application/javascript'))
         page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(f'http://127.0.0.1:{server.server_port}/projects/b2b-pricing-intelligence/',wait_until='networkidle',timeout=120000)
         page.wait_for_function("document.querySelector('#kpis').children.length === 5",timeout=120000)
@@ -33,9 +36,9 @@ try:
                 const p=$('priceChart'),v=$('volumeChart');
                 const below=rows.filter(r=>r.gap>=data.metadata.gap_threshold);
                 return {
-                    histogram:p.data.length===1&&p.data[0].type==='histogram'&&JSON.stringify(p.data[0].x)===JSON.stringify(rows.map(r=>r.price)),
-                    axes:p.layout.xaxis.title.text==='Effective price (GBP)'&&p.layout.yaxis.title.text==='Number of customers',
-                    priceLines:p.layout.shapes[0].x0===s.benchmark&&Math.abs(p.layout.shapes[1].x0-s.benchmark*.85)<1e-9&&p.layout.shapes[1].line.dash==='dash',
+                    bands:p.data.length===1&&p.data[0].type==='bar'&&p.data[0].y.reduce((a,b)=>a+b,0)===rows.length,
+                    axes:p.layout.xaxis.title.text==='Price position'&&p.layout.yaxis.title.text==='Number of customers',
+                    logScale:v.layout.xaxis.type==='log',
                     volumeLines:v.layout.shapes[0].y0===s.benchmark&&v.layout.shapes[1].x0===rows[0].sku_median_quantity,
                     uniform:typeof v.data[0].marker.size==='number',
                     hover:JSON.stringify(v.data[0].customdata)===JSON.stringify(rows.map(r=>[r.CustomerID,r.orders,r.gap*100,r.review_status])),
@@ -46,7 +49,7 @@ try:
             }""")
             assert all(result.values()),result
         check_product_charts()
-        assert page.locator('#skuStats th').all_text_contents()==['SKU','Canonical Description','Customers','Minimum','Median customer price','Maximum','Spread','Revenue']
+        assert page.locator('#skuStats th').all_text_contents()==['SKU','Canonical Description','Customers','Minimum','Median Customer Price','Maximum','Spread','Revenue']
         assert 'Benchmark' not in page.locator('#dispersion').inner_text()
         original_sku=page.locator('#sku').input_value()
         page.select_option('#sku',index=1)
@@ -107,13 +110,59 @@ try:
         assert page.locator('#page').inner_text().startswith('2 /')
         page.click('#prev')
         model=page.evaluate("data.elasticity.find(r=>r.eligible).StockCode")
-        page.select_option('#model',model)
+        page.select_option('#sku',model)
         assert page.locator('#scenarioTable tbody tr').count()==5
+        assert page.locator('#scenarioTable tr.suggested-row').count()==1
+        assert page.evaluate("$('scenarioChart').layout.xaxis.type==='category'")
         assert page.locator('#topTable').count()==0
         review_table=page.locator('#opportunities').inner_html()
         page.evaluate("window.savedModels=data.elasticity;data.elasticity=[];matrix();data.elasticity=window.savedModels;delete window.savedModels")
         assert page.locator('#opportunities').inner_html()==review_table
-        assert page.evaluate("Array.from(document.querySelector('#model').options).every(o=>data.elasticity.find(r=>r.StockCode===o.value).eligible)")
+        assert page.evaluate("priceSuggestion!==null")
+        # Deterministic selection, ties, missing scenarios and ineligible evidence.
+        assert page.evaluate("""() => {
+            const rows=testedChanges.map(change=>({change,price:10*(1+change),quantity:10,revenue:100}));
+            if(selectPriceSuggestion({eligible:true},rows).suggested.change!==0)return false;
+            for(const winner of testedChanges){
+                const test=rows.map(r=>({...r,revenue:r.change===winner?200:100}));
+                if(selectPriceSuggestion({eligible:true},test).suggested.change!==winner)return false;
+            }
+            return selectPriceSuggestion({eligible:false},rows)===null&&selectPriceSuggestion(null,rows)===null&&selectPriceSuggestion({eligible:true},rows.slice(1))===null;
+        }""")
+        assert page.evaluate("priceBands([-0.1,0,0.0001,.049999,.05,.149999,.15,.8].map(gap=>({gap}))).map(b=>b.count)")==[2,2,2,2]
+        assert page.evaluate("priceBands([]).every(b=>b.count===0&&b.percent===0)")
+        assert not page.locator('#modelStats').is_visible()
+        assert all(word not in page.locator('#elasticity').inner_text() for word in ['Coefficient','p-value','R²','regression'])
+        page.locator('#method details').first.locator('summary').click()
+        assert page.locator('#modelStats').is_visible()
+        assert 'Coefficient' in page.locator('#modelStats').inner_text()
+        page.locator('#method details').first.locator('summary').click()
+        # Real click on a Plotly bar, then toggle the same bar off.
+        bar=page.locator('#segmentChart .trace.bars .point path').first
+        bar.click(force=True)
+        assert page.locator('#segment').input_value()=='Small'
+        check_product_charts()
+        bar.click(force=True)
+        assert page.locator('#segment').input_value()==''
+        assert page.evaluate("$('segmentChart').data[0].customdata.every(r=>r.length===3)")
+        # An ineligible SKU stays selectable but cannot send a suggested price.
+        weak=page.evaluate("data.sku_pricing.find(s=>s.eligible&&!data.elasticity.some(m=>m.StockCode===s.StockCode&&m.eligible)).StockCode")
+        page.select_option('#sku',weak)
+        assert page.locator('#suggestion-state').inner_text()=='Insufficient historical evidence for price suggestion'
+        assert page.locator('#test-suggested').is_disabled()
+        page.select_option('#sku',model)
+        expected=page.evaluate('priceSuggestion')
+        page.click('#test-suggested')
+        assert float(page.locator('#commercial-proposed').input_value())==expected['suggested']['price']
+        assert float(page.locator('#commercial-current').input_value())==expected['baseline']['price']
+        assert 'Enter cost assumptions to evaluate profitability.' in page.locator('#comparison-status').inner_text()
+        assert page.locator('#commercial-cost').input_value()==''
+        assert page.evaluate("""() => {
+            const context={rows:[{price:10,quantity:100},{price:11,quantity:90}]};
+            const r=commercialComparison(context,10,11,6);
+            const manual=commercialComparison(context,10,12,6);
+            return r.current.revenue===1000&&r.proposed.revenue===990&&r.current.profit===400&&r.proposed.profit===450&&r.current.margin===.4&&Math.abs(r.proposed.margin-5/11)<1e-12&&manual.proposed.demand===null&&manual.proposed.profit===null;
+        }""")
         before=page.locator('#kpis').inner_text()
         assert page.locator('#commercial-kpis').inner_text()==''
         for key,value in {'cost':'100','months':'24','claimRate':'5','claimCost':'40','service':'8','target':'40','current':'150','benchmark':'200'}.items():
@@ -141,7 +190,7 @@ try:
         page.fill('#commercial-benchmark','')
         assert 'Enter an optional' in page.locator('#commercial-decision').inner_text()
         assert page.locator('#kpis').inner_text()==before
-        for width,height in [(1440,1000),(390,844),(320,740)]:
+        for width,height in [(1440,1000),(768,1024),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})
             page.wait_for_timeout(600)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
@@ -149,6 +198,20 @@ try:
             assert page.locator('#volumeChart').bounding_box()['width']<width
             assert page.locator('#sku').bounding_box()['x']+page.locator('#sku').bounding_box()['width']<=width
             assert page.evaluate("$('priceChart')._fullLayout._size.w>100&&$('volumeChart')._fullLayout._size.w>100")
+            for chart_id in ['segmentChart','priceChart','volumeChart','scenarioChart','commercial-waterfall']:
+                assert page.locator('#'+chart_id).bounding_box()['width']<width
+            page.evaluate("Plotly.Fx.hover('scenarioChart',[{curveNumber:0,pointNumber:0}])")
+            hover=page.locator('#scenarioChart .hoverlayer').text_content()
+            assert all(label in hover for label in ['Price:', 'Model-implied demand:', 'Model-implied revenue:', 'Revenue change:'])
+            page.evaluate("Plotly.Fx.unhover('scenarioChart')")
+            page.select_option('#segment','Medium')
+            check_product_charts()
+            page.select_option('#segment','')
+            assert page.evaluate("Array.from(document.querySelectorAll('.table-wrap')).every(e=>e.getBoundingClientRect().right<=innerWidth+1&&getComputedStyle(e).overflowX==='auto')")
+            if os.environ.get('PRICING_SCREENSHOTS'):
+                page.screenshot(path=str(Path(os.environ['PRICING_SCREENSHOTS'])/f'pricing-{width}.png'),full_page=True)
+                page.locator('#elasticity').screenshot(path=str(Path(os.environ['PRICING_SCREENSHOTS'])/f'opportunity-{width}.png'))
+            print(f'PASS responsive {width}x{height}: charts, filters, contained scrollable tables, no page overflow',flush=True)
         page.goto(f'http://127.0.0.1:{server.server_port}/',wait_until='networkidle')
         cards=page.locator('.intelligence-grid > .project-card')
         assert cards.count()==2

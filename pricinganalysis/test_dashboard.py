@@ -19,13 +19,41 @@ try:
         page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(f'http://127.0.0.1:{server.server_port}/projects/b2b-pricing-intelligence/',wait_until='networkidle',timeout=120000)
         page.wait_for_function("document.querySelector('#kpis').children.length === 5",timeout=120000)
-        assert '17,743,429.18' in page.locator('#kpis').inner_text()
+        metadata=json.loads((root/'projects/b2b-pricing-intelligence/data/metadata.json').read_text())
+        assert f"{metadata['identified_revenue']:,.2f}" in page.locator('#kpis').inner_text()
         assert 'Modelled' not in page.locator('#kpis').inner_text()
         assert page.locator('#confidence').count()==0
         assert page.evaluate("data.pricing_opportunities.every(r=>!['confidence','new_price','impact','beta'].some(k=>k in r))")
         assert page.locator('#opportunities th').all_text_contents()==['Customer','SKU','Description','Customer Segment','Orders','Quantity','Effective Price','Latest Price','SKU Median Price','Price Gap %','Volume Position','Pricing Review Status','Reason']
         page.wait_for_function("document.querySelector('#priceChart').classList.contains('js-plotly-plot')",timeout=30000)
+        def check_product_charts():
+            result=page.evaluate("""() => {
+                const s=data.sku_pricing.find(r=>r.StockCode===$('sku').value);
+                const rows=data.pricing_opportunities.filter(r=>r.StockCode===s.StockCode&&(!$('segment').value||r.segment===$('segment').value));
+                const p=$('priceChart'),v=$('volumeChart');
+                const below=rows.filter(r=>r.gap>=data.metadata.gap_threshold);
+                return {
+                    histogram:p.data.length===1&&p.data[0].type==='histogram'&&JSON.stringify(p.data[0].x)===JSON.stringify(rows.map(r=>r.price)),
+                    axes:p.layout.xaxis.title.text==='Effective price (GBP)'&&p.layout.yaxis.title.text==='Number of customers',
+                    priceLines:p.layout.shapes[0].x0===s.benchmark&&Math.abs(p.layout.shapes[1].x0-s.benchmark*.85)<1e-9&&p.layout.shapes[1].line.dash==='dash',
+                    volumeLines:v.layout.shapes[0].y0===s.benchmark&&v.layout.shapes[1].x0===rows[0].sku_median_quantity,
+                    uniform:typeof v.data[0].marker.size==='number',
+                    hover:JSON.stringify(v.data[0].customdata)===JSON.stringify(rows.map(r=>[r.CustomerID,r.orders,r.gap*100,r.review_status])),
+                    summary:$('priceInterpretation').textContent.includes(`${fmt(below.length)} customers (${(100*below.length/rows.length).toFixed(1)}%)`),
+                    names:Array.from($('sku').options).every(o=>o.text===`${o.value} · ${data.sku_pricing.find(s=>s.StockCode===o.value).Description}`),
+                    unique:new Set(Array.from($('sku').options,o=>o.value)).size===$('sku').options.length
+                };
+            }""")
+            assert all(result.values()),result
+        check_product_charts()
+        assert page.locator('#skuStats th').all_text_contents()==['SKU','Canonical Description','Customers','Minimum','Median customer price','Maximum','Spread','Revenue']
+        assert 'Benchmark' not in page.locator('#dispersion').inner_text()
+        original_sku=page.locator('#sku').input_value()
+        page.select_option('#sku',index=1)
+        check_product_charts()
+        page.select_option('#sku',original_sku)
         page.select_option('#segment','Strategic')
+        check_product_charts()
         assert page.locator('#segmentTable tbody tr').count()==1
         page.select_option('#recommendation','Pricing Review')
         page.select_option('#scope','selected')
@@ -35,6 +63,31 @@ try:
         page.fill('#search','')
         for key in ['segment','recommendation','scope']:
             page.select_option('#'+key,'')
+        # Exercise exact-threshold, high/low-volume and empty-selection wording.
+        interpretations=page.evaluate("""() => {
+            const saved=data,sku=$('sku').value;
+            const rows=[
+                {StockCode:sku,CustomerID:'C1',quantity:10,orders:3,price:8.5,gap:.15,sku_median_quantity:20,review_status:'Pricing Review'},
+                {StockCode:sku,CustomerID:'C2',quantity:20,orders:3,price:10,gap:0,sku_median_quantity:20,review_status:'Maintain / No Material Gap'},
+                {StockCode:sku,CustomerID:'C3',quantity:30,orders:3,price:11,gap:-.1,sku_median_quantity:20,review_status:'Maintain / No Material Gap'}
+            ];
+            try {
+                data={...saved,sku_pricing:[{StockCode:sku,Description:'Test',benchmark:10}],pricing_opportunities:rows};
+                products();
+                const low=$('volumeInterpretation').textContent,price=$('priceInterpretation').textContent;
+                rows[0].quantity=30;rows[2].quantity=10;products();
+                const high=$('volumeInterpretation').textContent;
+                data.pricing_opportunities=[];products();
+                const empty=$('priceInterpretation').textContent;
+                rows[0].gap=0;rows[0].price=10;data.pricing_opportunities=rows;products();
+                return {low,price,high,empty,none:$('volumeInterpretation').textContent};
+            } finally {data=saved;products();}
+        }""")
+        assert '1 customers (33.3%)' in interpretations['price']
+        assert '1 of 1' in interpretations['low'] and 'at or below' in interpretations['low']
+        assert '1 of 1' in interpretations['high'] and 'above the median' in interpretations['high']
+        assert interpretations['empty']=='No customers match this SKU and segment selection.'
+        assert interpretations['none'].startswith('No displayed customers pay at least 15%')
         for status in ['Pricing Review','Possible Volume Justification']:
             page.select_option('#recommendation',status)
             assert page.locator('#opportunities tbody tr').count()>0
@@ -88,11 +141,14 @@ try:
         page.fill('#commercial-benchmark','')
         assert 'Enter an optional' in page.locator('#commercial-decision').inner_text()
         assert page.locator('#kpis').inner_text()==before
-        for width,height in [(1440,1000),(390,844)]:
+        for width,height in [(1440,1000),(390,844),(320,740)]:
             page.set_viewport_size({'width':width,'height':height})
             page.wait_for_timeout(600)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
             assert page.locator('#priceChart').bounding_box()['width']<width
+            assert page.locator('#volumeChart').bounding_box()['width']<width
+            assert page.locator('#sku').bounding_box()['x']+page.locator('#sku').bounding_box()['width']<=width
+            assert page.evaluate("$('priceChart')._fullLayout._size.w>100&&$('volumeChart')._fullLayout._size.w>100")
         page.goto(f'http://127.0.0.1:{server.server_port}/',wait_until='networkidle')
         cards=page.locator('.intelligence-grid > .project-card')
         assert cards.count()==2

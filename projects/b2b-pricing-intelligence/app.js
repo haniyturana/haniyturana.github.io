@@ -4,13 +4,20 @@ const fmt=v=>v==null?'—':num.format(v), gbp=v=>v==null?'—':money.format(v), 
 let data={},page=0;
 function table(id,rows,cols){$(id).innerHTML=rows.length?`<div class="table-wrap" tabindex="0" aria-label="Scrollable data table"><table><thead><tr>${cols.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="${r.selected?'suggested-row':''}">${cols.map(c=>`<td>${esc((c[2]||((x)=>x))(r[c[1]]))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:'<p class="note">No qualifying results for this selection.</p>';}
 function chart(id,traces,x='',y='',layout={}){if(!window.Plotly){$(id).textContent='Chart library unavailable. Tables remain available.';return;}Plotly.react(id,traces,{margin:{t:30,r:25,b:65,l:75},paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{family:'Segoe UI, sans-serif',color:'#53657a'},showlegend:false,...layout,xaxis:{title:x,automargin:true,...layout.xaxis},yaxis:{title:y,automargin:true,gridcolor:'#edf1f5',...layout.yaxis}},{responsive:true,displayModeBar:false});}
-const cols=[['Customer','CustomerID'],['SKU','StockCode'],['Description','Description'],['Customer Segment','segment'],['Orders','orders',fmt],['Quantity','quantity',fmt],['Effective Price','price',gbp],['Latest Price','latest_price',gbp],['SKU Median Price','benchmark',gbp],['Price Gap %','gap',pct],['Volume Position','volume_position'],['Pricing Review Status','review_status'],['Reason','reason']];
+const reviewStatuses=['Pricing Review','Possible Volume Justification','Maintain / No Material Gap','Insufficient Evidence'];
+const cols=[['Customer','CustomerID'],['SKU','StockCode'],['Description','Description'],['Orders','orders',fmt],['Quantity','quantity',fmt],['Effective Price','price',gbp],['SKU Median Price','benchmark',gbp],['Price Gap %','gap',pct],['Volume Position','volume_position'],['Pricing Review Status','review_status']];
+function reviewTable(rows){
+  $('opportunities').innerHTML=rows.length?`<table class="review-table"><thead><tr>${cols.map(c=>`<th scope="col">${esc(c[0])}</th>`).join('')}</tr></thead>${rows.map(r=>`<tbody><tr class="review-row">${cols.map(c=>`<td data-label="${esc(c[0])}">${esc((c[2]||((x)=>x))(r[c[1]]))}</td>`).join('')}</tr><tr class="review-detail"><td colspan="10"><details><summary>Details for ${esc(r.CustomerID)} / ${esc(r.StockCode)}</summary><dl>${[['Customer Segment',r.segment],['Latest Price',gbp(r.latest_price)],['Reason',r.reason],['Revenue',gbp(r.revenue)],['SKU median customer quantity',fmt(r.sku_median_quantity)]].map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></details></td></tr></tbody>`).join('')}</table>`:'<p class="note">No qualifying results for this selection.</p>';
+}
 function matrix(){
   const q=$('search').value.toLowerCase();
   const rows=data.pricing_opportunities.filter(r=>(!$('segment').value||r.segment===$('segment').value)&&(!$('recommendation').value||r.review_status===$('recommendation').value)&&(!$('scope').value||r.StockCode===$('sku').value)&&[r.CustomerID,r.StockCode,r.Description].join(' ').toLowerCase().includes(q));
-  rows.sort((a,b)=>($('sort').value==='desc'?-1:1)*(a.gap-b.gap));
+  const counts=Object.fromEntries(reviewStatuses.map(status=>[status,0]));
+  rows.forEach(r=>counts[r.review_status]++);
+  $('review-summary').innerHTML=reviewStatuses.map((status,i)=>`<div class="review-count ${i===0?'primary-count':''}"><span>${esc(status)}</span><strong>${fmt(counts[status])}</strong></div>`).join('');
+  rows.sort((a,b)=>($('sort').value==='priority'?reviewStatuses.indexOf(a.review_status)-reviewStatuses.indexOf(b.review_status):0)||($('sort').value==='asc'?a.gap-b.gap:b.gap-a.gap)||a.CustomerID.localeCompare(b.CustomerID)||a.StockCode.localeCompare(b.StockCode));
   page=Math.min(page,Math.max(0,Math.ceil(rows.length/25)-1));
-  table('opportunities',rows.slice(page*25,page*25+25).map(r=>({...r,volume_position:`${r.volume_position} (${fmt(r.sku_median_quantity)} units)`})),cols);
+  reviewTable(rows.slice(page*25,page*25+25));
   $('page').textContent=`${rows.length?page+1:0} / ${Math.ceil(rows.length/25)} | ${fmt(rows.length)} results`;
   $('prev').disabled=page===0;$('next').disabled=(page+1)*25>=rows.length;
 }

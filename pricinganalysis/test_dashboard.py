@@ -27,7 +27,47 @@ try:
         assert 'Modelled' not in page.locator('#kpis').inner_text()
         assert page.locator('#confidence').count()==0
         assert page.evaluate("data.pricing_opportunities.every(r=>!['confidence','new_price','impact','beta'].some(k=>k in r))")
-        assert page.locator('#opportunities th').all_text_contents()==['Customer','SKU','Description','Customer Segment','Orders','Quantity','Effective Price','Latest Price','SKU Median Price','Price Gap %','Volume Position','Pricing Review Status','Reason']
+        assert page.locator('#opportunities th').all_text_contents()==['Customer','SKU','Description','Orders','Quantity','Effective Price','SKU Median Price','Price Gap %','Volume Position','Pricing Review Status']
+        assert page.locator('#sort').input_value()=='priority'
+        assert page.evaluate("Array.from(document.querySelectorAll('.review-row')).every(r=>r.cells[9].textContent==='Pricing Review')")
+        assert page.locator('#review-summary strong').all_text_contents()==['72','2,428','52,376','426,112']
+        first_page=page.locator('#opportunities').inner_html()
+        page.click('#next')
+        assert page.locator('#page').inner_text().startswith('2 /')
+        assert page.locator('#opportunities').inner_html()!=first_page
+        page.click('#prev')
+        assert page.locator('#opportunities').inner_html()==first_page
+        # Exercise status boundaries and gap ordering across the entire result set.
+        assert page.evaluate("""() => {
+            const original=data.pricing_opportunities;
+            const sample=reviewStatuses.flatMap(status=>original.filter(r=>r.review_status===status).slice(0,3)).reverse();
+            data.pricing_opportunities=sample;matrix();
+            const actual=Array.from(document.querySelectorAll('.review-row'),r=>[r.cells[0].textContent,r.cells[1].textContent]);
+            const expected=[...sample].sort((a,b)=>reviewStatuses.indexOf(a.review_status)-reviewStatuses.indexOf(b.review_status)||b.gap-a.gap||a.CustomerID.localeCompare(b.CustomerID)||a.StockCode.localeCompare(b.StockCode)).map(r=>[r.CustomerID,r.StockCode]);
+            data.pricing_opportunities=original;matrix();
+            return JSON.stringify(actual)===JSON.stringify(expected);
+        }""")
+        page.fill('#search','C01315 84927E')
+        assert page.locator('.review-row').count()==1
+        assert page.locator('#review-summary strong').all_text_contents()==['0','0','0','1']
+        detail=page.locator('.review-detail details')
+        assert not detail.evaluate('(e)=>e.open')
+        detail.locator('summary').focus()
+        page.keyboard.press('Enter')
+        assert detail.evaluate('(e)=>e.open')
+        assert detail.locator('dd').all_text_contents()[:2]==['Large','£0.08']
+        for width in [1440,768,390,320]:
+            page.set_viewport_size({'width':width,'height':1000})
+            page.wait_for_function("document.documentElement.scrollWidth<=innerWidth+1")
+            assert page.locator('#opportunities').evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+        detail.locator('summary').click()
+        assert not detail.evaluate('(e)=>e.open')
+        page.fill('#search','')
+        for width in [1440,768,390,320]:
+            page.set_viewport_size({'width':width,'height':1000})
+            assert page.locator('#opportunities').evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+        page.set_viewport_size({'width':1440,'height':1000})
+        print('PASS pricing priority, filtered counts, keyboard details, pagination and responsive review table',flush=True)
         page.wait_for_function("document.querySelector('#priceChart').classList.contains('js-plotly-plot')",timeout=30000)
         def check_product_charts():
             result=page.evaluate("""() => {
@@ -93,17 +133,17 @@ try:
         assert interpretations['none'].startswith('No displayed customers pay at least 15%')
         for status in ['Pricing Review','Possible Volume Justification']:
             page.select_option('#recommendation',status)
-            assert page.locator('#opportunities tbody tr').count()>0
-            assert all(s==status for s in page.locator('#opportunities tbody td:nth-child(12)').all_text_contents())
+            assert page.locator('#opportunities .review-row').count()>0
+            assert all(s==status for s in page.locator('#opportunities .review-row td:nth-child(10)').all_text_contents())
         assert page.evaluate("data.pricing_opportunities.filter(r=>r.review_status==='Pricing Review').every(r=>r.eligible&&r.orders>=3&&r.gap>=data.metadata.gap_threshold&&r.quantity<=r.sku_median_quantity)")
         assert page.evaluate("data.pricing_opportunities.filter(r=>r.review_status==='Possible Volume Justification').every(r=>r.eligible&&r.orders>=3&&r.gap>=data.metadata.gap_threshold&&r.quantity>r.sku_median_quantity)")
         page.select_option('#recommendation','')
         page.select_option('#sort','desc')
-        assert page.locator('#opportunities tbody tr').count()==25
-        gaps=[float(s.replace('%','').replace(',','')) for s in page.locator('#opportunities tbody td:nth-child(10)').all_text_contents()]
+        assert page.locator('#opportunities .review-row').count()==25
+        gaps=[float(s.replace('%','').replace(',','')) for s in page.locator('#opportunities .review-row td:nth-child(8)').all_text_contents()]
         assert gaps==sorted(gaps,reverse=True)
         page.select_option('#sort','asc')
-        gaps=[float(s.replace('%','').replace(',','')) for s in page.locator('#opportunities tbody td:nth-child(10)').all_text_contents()]
+        gaps=[float(s.replace('%','').replace(',','')) for s in page.locator('#opportunities .review-row td:nth-child(8)').all_text_contents()]
         assert gaps==sorted(gaps)
         page.select_option('#sort','desc')
         page.click('#next')
